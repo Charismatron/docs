@@ -1,19 +1,18 @@
 ---
-description: This document is the reference of the YAML grammar used for describing the pipelines of Semaphore 2.0 projects.
+description: This document is the reference for YAML grammar used for describing pipelines in Semaphore 2.0 projects.
 ---
 
 # Pipeline YAML Reference
 
-This document is the reference of the YAML grammar used for describing the
-pipelines of Semaphore 2.0 projects.
+This document is the reference for YAML grammar used to describe Semaphore 2.0 project pipelines.
 
 The core properties of a Semaphore pipeline configuration file are
-`blocks`, which appear only once at the beginning of a YAML file, `task`,
+`blocks`, which appear only once at the beginning of a YAML file, `tasks`,
 which can appear multiple times, `jobs`, which can also be repeated, and
-`promotions` that is optional and can appear only once.
+`promotions` that are optional and can appear only once.
 
 Each Semaphore pipeline configuration file has a mandatory preface,
-which consists of properties `version`, `name` and `agent`.
+which consists of the properties `version`, `name`, and `agent`.
 
 ## Properties
 
@@ -36,8 +35,8 @@ The `name` property is a Unicode string that assigns a name to a Semaphore
 pipeline and is optional. However, you should always give descriptive names
 to your Semaphore pipelines.
 
-*Note*: The `name` property can be found in other sections such as defining the
-name of a job inside a `jobs` block.
+*Note*: The `name` property can be found in other sections such as where the
+name of a job inside a `jobs` block is defined.
 
 Example of `name` usage:
 
@@ -77,7 +76,7 @@ machine:
 ### type
 
 The `type` property is intended for selecting the hardware you would
-like to use for the Virtual Machine of your jobs.
+like to use for the Virtual Machine running your jobs.
 
 A complete list of valid values for the `type` is available on the
 [Machine Types](https://docs.semaphoreci.com/ci-cd-environment/machine-types/) page.
@@ -91,7 +90,7 @@ type: e1-standard-4
 ### os_image
 
 The `os_image` is an optional property that specifies the operating system image
-to be used in the virtual machine. If the value is not provided the default for
+to be used in the virtual machine. If the value is not provided, the default for
 the machine type is used.
 
 These are valid values for `os_image`:
@@ -135,30 +134,30 @@ agent:
 !!! info "Semaphore convenience images redirection"
 	Due to the introduction of [Docker Hub rate limits](/ci-cd-environment/docker-authentication/), if you are using a [Docker-based CI/CD environment](/ci-cd-environment/custom-ci-cd-environment-with-docker/) in combination with convenience images Semaphore will **automatically redirect** any pulls from the `semaphoreci` Docker Hub repository to the [Semaphore Container Registry](/ci-cd-environment/semaphore-registry-images/).
 
-Each container entry must define the `name` and `image` property. The name of
+Each container entry must define a `name` and `image` property. The name of
 the container is used when linking the containers together, and for defining
 hostnames in the first container.
 
 The first container runs the jobs' commands, while the rest of the containers
-are linked via DNS records. The container with name `db` is registered with a
+are linked via DNS records. The container with the name `db` is registered with a
 hostname `db` in the first container.
 
 Other optional parameters of each container definition can be divided into two groups:
 
-1. Docker related parameters that are passed to docker run command that starts the container. More information about them can be found in [docker run][docker-run] docs.
+1. Docker-related parameters are passed to docker run command that starts the container. More information about them can be found in the [docker run][docker-run] docs.
 
     - `user` - The user that will be used within the container
     - `command` - The first command to execute within the container. It overrides the command defined in Dockerfile.
-    - `entrypoint` - This specifies what executable to run when the container starts
+    - `entrypoint` - This specifies which executable to run when the container starts
 
-2. The data that needs to be injected into containers that is either defined directly there in YAML file or is stored in Semaphore secrets
+2. Data that need to be injected into containers, which are either defined directly in YAML file or stored in Semaphore secrets:
 
-    - `env_vars` - Environment variables that are injected into the the container. They are defined in the same way as in [task definition][env-var-in-task].
-    - `secrets` - Secrets which hold the data the should be injected into the container. They are defined in the same way as in [task definition][secrets-in-task]. *Note*: currently, only environment variables defined in a secret will be injected into container, the files within the secret will be ignored.
+    - `env_vars` - Environment variables that are injected into the container. They are defined in the same way as in [task definition][env-var-in-task].
+    - `secrets` - Secrets which hold the data that will be injected into the container. They are defined in the same way as in [task definition][secrets-in-task]. *Note*: currently, only environment variables defined in a secret will be injected into container, the files within the secret will be ignored.
 
 !!! warning "Docker Hub rate limits"
     Please note that due to the introduction of the [rate limits](https://docs.docker.com/docker-hub/download-rate-limit/) on Docker Hub, all pulls have to be authenticated.
-    If you are pulling any images from Docker Hub public repository please make sure you are logged in to avoid any failiures. You can find more information on how to authenticate in our [Docker authentication](https://docs.semaphoreci.com/ci-cd-environment/docker-authentication/) guide.
+    If you are pulling any images from the Docker Hub public repository, please make sure you are logged in to avoid any failiures. You can find more information on how to authenticate in our [Docker authentication](https://docs.semaphoreci.com/ci-cd-environment/docker-authentication/) guide.
 
 ### A Preface example
 
@@ -181,21 +180,20 @@ blocks:
 ## execution\_time\_limit
 
 The concept behind the `execution_time_limit` property is simple: you do not
-want your jobs to be executed forever and you need to be able to set a time
+want your jobs to be executed endlessly, so you need to be able to set a time
 limit for the entire pipeline as well as for individual blocks and jobs.
 
-The `execution_time_limit` property can be used at the `pipeline`, `block`
-or `job` scope. In the latter two cases you can use the propery for multiple
+The `execution_time_limit` property can be used at the `pipeline`, `block`,
+or `job` scopes. In the latter two cases, you can use the propery for multiple
 blocks or jobs.
 
-*Note*: In the `pipeline` and `block` scopes `execution_time_limit`  will
-sum the  runtime of all underlying elements, this also includes the time
-jobs are waiting for quota. Please keep this in mind when using the property.
+*Note*: On the `pipeline` and `block` scopes, `execution_time_limit`  will
+sum the runtime of all underlying elements, this also includes the time
+jobs are waiting in terms of quota. Please keep this in mind when using the property.
 
 The `execution_time_limit` property can hold two other properties, which are
-named `hours` and `minutes`, for specifying the execution time limit in hours,
-and minutes, respectively. You should only use one of these two properties and
-not both of them at the same time.
+named `hours` and `minutes`, for specifying the execution time limit in hours
+and minutes, respectively. You should only use one of these two properties at a given time, i.e. don't use both of them at the same time.
 
 The types of the values for both the `hours` and `minutes` properties are
 integers and their values should be greater than or equal to 1.
@@ -241,7 +239,7 @@ blocks:
 ### An example with an execution\_time\_limit in a block
 
 The following pipeline YAML file uses two `execution_time_limit` properties in
-a `block`:
+one `block`:
 
 ``` yaml
 version: v1.0
@@ -273,10 +271,9 @@ blocks:
           - echo "Building executable"
 ```
 
-### An example with an execution\_time\_limit at the job level
+### An example with an execution\_time\_limit at the job scope
 
-The following pipeline YAML file uses the `execution_time_limit` property with
- a `job` scope:
+The following pipeline YAML file uses the `execution_time_limit` property on the `job` scope:
 
 ``` yaml
 version: v1.0
@@ -304,11 +301,11 @@ blocks:
           - make test
 ```
 
-### An example with multiple execution\_time\_limit
+### An example with multiple execution\_time\_limit properties
 
 The following pipeline YAML file uses a combination of an `execution_time_limit`
-property with a `pipeline` scope and a single `execution_time_limit` property
-with a `block` scope:
+property on the `pipeline` scope and a single `execution_time_limit` property
+on the `block` scope:
 
 ``` yaml
 version: v1.0
@@ -340,8 +337,8 @@ blocks:
           - echo "Building executable"
 ```
 
-In this case the `Creating Docker Image` block should finish in less than 15
-minutes whereas the `Building executable` block should finish in less than 5
+In this case, the `Creating Docker Image` block should finish in less than 15
+minutes, while the `Building executable` block should finish in less than 5
 hours, which is the value of the `pipeline` scope `execution_time_limit` property.
 
 However, as blocks are currently executed sequentially, the
@@ -353,7 +350,7 @@ However, as blocks are currently executed sequentially, the
 The `fail_fast` property enables you to set a policy for a pipeline when one of
 its jobs fail.
 
-It can have two sub-properties, `stop` and `cancel`.
+It can have two sub-properties: `stop` and `cancel`.
 
 At least one of them is required. If both are set, `stop` will be evaluated first.
 
@@ -364,14 +361,14 @@ If this condition is fulfilled for a given pipeline execution, the appropriate
 fail-fast policy is activated.
 
 If a `stop` policy is set, all running jobs will be stopped and all pending
-ones will be canceled as soon as possible when one job fails.
+jobs will be canceled (as soon as possible) when one job fails.
 
 If a `cancel` policy is set, when one job fails, the blocks and jobs which have
-not yet started executing will be canceled, but already running ones will be
+not yet started executing will be canceled, but jobs that are already running will be
 allowed to finish executing. This will provide you with more data for debugging
 without using additional resources.
 
-### An example of setting fail-fast stop policy
+### An example of setting up a fail-fast stop policy
 
 In the following configuration, blocks A and B run in parallel. Block C runs
 after block B is finished.
@@ -380,7 +377,7 @@ When Block A fails, if the workflow was initiated from a non-master branch, the
 fail fast `stop` policy will be applied to:
 
 - Stop block B
-- Cancel (ie. not run) block C
+- Cancel (i.e. not run) block C
 
 ``` yaml
 version: v1.0
@@ -419,7 +416,7 @@ blocks:
           - sleep 60
 ```
 
-### An example of setting fail-fast cancel policy
+### An example of setting up a fail-fast cancel policy
 
 In the following configuration, blocks A and B run in parallel. Block C runs
 after block B is finished.
@@ -428,7 +425,7 @@ When Block A fails, if the workflow was initiated from a non-master branch, the
 fail fast `cancel` policy will be applied to:
 
 - Let block B finish
-- Cancel (ie. not run) block C
+- Cancel (i.e. not run) block C
 
 ``` yaml
 version: v1.0
@@ -469,60 +466,60 @@ blocks:
 
 ## queue
 
-The optional `queue` property enables you to assign the pipeline to the custom
+The optional `queue` property enables you to put pipelines into custom
 execution queues and/or to configure the way the pipelines are processed when
 queuing is about to happen.
 
-There are two ways you can define a `queue` behaviour.
+There are two ways you can define `queue` behaviour.
 
-The first one is with `direct queue configuration` that will be applied to all
+The first one is with a `direct queue configuration` that will be applied to all
 pipelines initiated with a given YAML configuration file.
 
-The second approach is `conditional queue configurations` that allows you to
-define an array of queue definitions and conditions under which those definitions
+The second approach is `conditional queue configurations` that allow you to
+define an array of queue definitions, and the conditions under which those definitions
 should be applied.
 
 All the sub-properties with their possible values for both approaches are listed
 below and you can find more examples and use cases for different queue
-configurations on the [Pipeline Queues][pipeline-queues] page
+configurations on the [Pipeline Queues][pipeline-queues] page.
 
 ### direct queue configuration
 
 When using this approach, you can use the `name`, `scope` and `processing`
 properties as a direct sub-properties of a `queue` property.
 
-The `name` property should hold the string that uniquely identifies wanted queue
+The `name` property should hold the string that uniquely identifies the desired queue
 within the configured scope.
 
-If it is omitted, it will be auto-generated based on the git branch/tag name or
+If the `name` property is omitted, it will be auto-generated based on the git branch/tag name or
 pull request number and the YAML configuration file name for the given pipeline.
 
-The `scope` property can have one of two values, **project** or **organization**.
+The `scope` property can have one of two values: **project** or **organization**.
 
 If the `scope` is set to **organization** the pipelines from the queue will be
 queued together with pipelines from other projects within the organization that
-have the queue configuration with same `name` and `scope` values.
+have a queue configuration with same `name` and `scope` values.
 
-On the other hand, the queues with the same values for `name` property in different
-projects that have `scope` set to **project** are mutually independent and their
+On the other hand, queues with the same values for the `name` property in different
+projects that have their `scope` set to **project** are mutually independent and their
 pipelines will not be queued together.
 
-If `scope` property is omitted, its value will be automatically set to **project**.
+If the `scope` property is omitted, its value will be automatically set to **project**.
 
 The `processing` property configures the way pipelines are processed in the queue
 and it can have one of two values, **serialized** or **parallel**.
 
-If the `processing` is set to **serialized** the pipelines in the queue will be
-queued and executed one by one in the ascending order by creation time.
+If `processing` is set to **serialized** the pipelines in the queue will be
+queued and executed one by one in an ascending order according to creation time.
 
-If the `processing` is set to **parallel** all pipelines in the queue will be
+If `processing` is set to **parallel** all pipelines in the queue will be
 executed as soon as they are created and there will be no queuing at all.
 
-If `processing` property is omitted, its value will be automatically set to
+If the `processing` property is omitted, its value will be automatically set to
 **serialized**.
 
-Either `name` or `processing` property are required for queue definitions to be
-valid and `scope` property can only be configured if the `name` property is also
+Either a `name` property or a `processing` property is required for queue definitions to be
+valid and a `scope` property can only be configured if the `name` property is also
 configured.
 
 ### conditional queue configurations
@@ -530,11 +527,10 @@ configured.
 In this approach, you should define an array of items with queue configurations
 as a sub-property of the `queue` property.
 
-Each array item can have the same properties, `name`, `scope` and `processing`,
+Each array item can have the same properties, `name`, `scope`, and `processing`,
 as in [direct queue configuration](#direct-queue-configuration).
 
-Besides those, one additional property is required in each array item and that is
-a `when` property that should hold the condition written in [Conditions DSL][conditions-reference].
+In addition to the aforementioned, one additional property is required in each array item: a `when` property, which should hold the condition written in [Conditions DSL][conditions-reference].
 
 When the `queue` configuration is evaluated in this approach, the `when` conditions
 from the items in the array are evaluated one by one starting with the first item
@@ -653,12 +649,12 @@ It can contain any of these properties:
 - [priority](#priority)
 
 The defined configuration values have completely the same syntax as the ones
-defined on a task or a job level and are applied to all the tasks and jobs in a
+defined on a task or job scope and are applied to all the tasks and jobs in a
 pipeline.
 
 In the case of `prologue` and `env_vars` the global values, ones from
 `global_job_config`, are exported first, and after them, the ones defined on a
-task level.
+task scope.
 This allows overriding global values for the specific task if there is a need for
 that.
 
@@ -668,7 +664,7 @@ one can firstly perform specific cleanup commands before the global ones.
 The `secrets` are just merged since ordering plays no role there.
 
 In the case of the `priority`, the global values are added at the end of the list
-of the priorities and their conditions defined on a job level.
+of the priorities and their conditions defined on the job scope.
 This allows for job-specific priorities to be evaluated first, and only if none
 of them matches will the global ones be evaluated and used.
 
@@ -1125,15 +1121,15 @@ machine begins its execution.
 ### env_vars in jobs
 
 An `env_vars` block can also be defined within a `jobs` block having a local
-scope in addition to an `env_vars` block that is defined on a `task` level
+scope in addition to an `env_vars` block that is defined on the `task` scope
 where its scope is the entire `task` block. In that case the environment
 variables of that local `env_vars` block will be only visible to the `jobs`
 block it belongs to.
 
-If one or more environment variables are defined on both a `jobs` level and a
-`task` level, the values of the environment variables that are defined on the
-`jobs` level take precedence over the values of the environment variables that
-were also defined on the `task` level.
+If one or more environment variables are defined on both the `jobs` scope and
+`task` scope, the values of the environment variables that are defined on the
+`jobs` scope take precedence over the values of the environment variables that
+were also defined on the `task` scope.
 
 #### Example of env_vars in jobs
 
